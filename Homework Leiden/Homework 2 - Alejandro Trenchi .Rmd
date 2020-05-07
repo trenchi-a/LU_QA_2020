@@ -1,0 +1,264 @@
+
+---
+title: ''
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+<center> <h2> Homework 2: Corona and Democracy </center> 
+<p>&nbsp;</p>
+<center> <h4> Political Science Research Methods </center> 
+<center> <h4> The Institute of Political Science </center> 
+<center> <h4> Leiden University </center> 
+<center> Prof. Dr. Babak Rezaee Daryakenari </center> 
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<center> Alejandro Trenchi (s2593688) </center>
+<center> [github.com/trenchi-a](github.com/trenchi-a) </center>
+<p>&nbsp;</p>
+<center> Spring 2020 </center>
+<p>&nbsp;</p>
+**Data: V-Dem Project** 
+<p>&nbsp;</p>
+```{r, warning=FALSE, message=FALSE}
+Corona=read.csv("https://raw.githubusercontent.com/trenchi-a/LU_QA_2020/master/Datasets/Corona_mergedV-Dem.csv")
+names(Corona)
+```
+<p>&nbsp;</p>
+**1a. Visualize the distribution of cases_log, v2x_polyarchy, v2x_libdem, v2x_partipdem.**
+<p>&nbsp;</p>
+```{r, warning=FALSE, message=FALSE}
+library(ggplot2)
+```
+<p>&nbsp;</p>
+**Corona Cases**
+```{r, warning=FALSE, message=FALSE}
+ggplot(Corona,
+       aes(x = cases_log)) + 
+  geom_histogram(col="blue", fill="maroon")+
+  labs(x = "Corona cases",
+       y = "Count",
+       caption="Data sources:https://github.com/trenchi-a")
+```
+<p>&nbsp;</p>
+**Polyarchy**
+```{r, warning=FALSE, message=FALSE}
+ggplot(Corona,
+       aes(x= v2x_polyarchy)) +
+  geom_histogram(col='blue', fill='maroon')+
+  labs(x = "Polyarchy",
+       y = "Count",
+       caption="Data sources:https://github.com/trenchi-a")
+```
+<p>&nbsp;</p>
+**Liberal Democracy**
+```{r, warning=FALSE, message=FALSE}
+ggplot(Corona,
+       aes(x = v2x_libdem)) +
+  geom_histogram(col="blue", fill='maroon')+
+  labs(x = "Liberal Democracy",
+       y = "Count",
+       caption="Data sources:https://github.com/trenchi-a")
+```
+<p>&nbsp;</p>
+**Participatoy Democracy**
+```{r, warning=FALSE, message=FALSE}
+ggplot(Corona,
+       aes(x = v2x_partipdem)) +
+  geom_histogram(col="blue", fill="maroon")+
+  labs(x = "Participatory Democracy",
+       y = "Count",
+       caption="Data sources:https://github.com/trenchi-a")
+```
+<p>&nbsp;</p>
+**1b. Reproduce the below plot. (tips: use ggpairs from GGally package).**
+<p>&nbsp;</p>
+```{r, warning=FALSE, message=FALSE}
+# If v2x_polyarchy>.5: democracy(1); v2x_polyarchy<.5: nodemocracy(0)
+Corona$polyarchy_cat=ifelse(Corona$v2x_polyarchy> .5, "Democracy", "Autocracy")
+Corona$polyarchy_cat<-factor(Corona$polyarchy_cat)
+
+library(GGally)
+
+ggpairs(Corona, columns = c("popdata2018_log","deaths_log","v2x_partipdem","polyarchy_cat")) 
+```
+<p>&nbsp;</p>
+**1c. Define the categorical variables of democracy indices: larger than .5 democracy, otherwise autocracy. Plot the association of these variables with cases_log.**
+<p>&nbsp;</p>
+
+**Polyarchy**
+```{r, warning=FALSE, message=FALSE}
+# If v2x_polyarchy>.5: democracy(1); v2x_polyarchy<.5: nodemocracy(0)
+Corona$polyarchy_cat=ifelse(Corona$v2x_polyarchy> .5, "Democracy", "Autocracy")
+Corona$polyarchy_cat<-factor(Corona$polyarchy_cat)
+
+boxplot(Corona$cases_log~Corona$polyarchy_cat,
+        col='maroon',
+        xlab='', ylab='Corona cases')
+```
+
+**Liberal Democracy**
+```{r, warning=FALSE, message=FALSE}
+# If v2x_libdem>.5: democracy(1); v2x_libdem<.5: nodemocracy(0)
+Corona$libdem_cat=ifelse(Corona$v2x_libdem> .5, "Democracy", "Autocracy")
+Corona$libdem_cat<-factor(Corona$libdem_cat)
+
+boxplot(Corona$cases_log~Corona$libdem_cat,
+        col='maroon',
+        xlab='', ylab='Corona cases')
+```
+
+**Participatory Democracy**
+```{r, warning=FALSE, message=FALSE}
+# If v2x_partidem>.5: democracy(1); v2x_partidem<.5: nodemocracy(0)
+Corona$partidem_cat=ifelse(Corona$v2x_partipdem> .5, "Democracy", "Autocracy")
+Corona$partidem_cat<-factor(Corona$partidem_cat)
+
+boxplot(Corona$cases_log~Corona$partidem_cat,
+        col='maroon',
+        xlab='', ylab='Corona cases')
+```
+
+<p>&nbsp;</p>
+**d.Estimate below models and discuss their results:**
+<p>&nbsp;</p>
+**1. cases_log = $\beta$ 0 + $\beta$ 1 v2x_polyarchy + $\epsilon$** 
+
+```{r, warning=FALSE, message=FALSE}
+OLS_m1=lm(cases_log~v2x_polyarchy, data=Corona)
+summary(OLS_m1)
+ggplot(Corona, aes(x=v2x_polyarchy, y=cases_log)) + 
+  geom_point() + geom_smooth(method=lm, color="maroon", se=FALSE)
+```
+
+**2. cases_log = $\beta$ 0 + $\beta$ 1 v2x_libdem + $\epsilon$** 
+
+```{r, warning=FALSE, message=FALSE}
+OLS_m2=lm(cases_log~v2x_libdem, data=Corona)
+summary(OLS_m2)
+ggplot(Corona, aes(x=v2x_libdem, y=cases_log)) + 
+  geom_point() + geom_smooth(method=lm, color="maroon", se=FALSE)
+```
+
+**3. cases_log = $\beta$ 0 + $\beta$ 1 v2x_partidem + $\epsilon$** 
+
+```{r, warning=FALSE, message=FALSE}
+OLS_m3=lm(cases_log~v2x_partipdem, data=Corona)
+summary(OLS_m3)
+ggplot(Corona, aes(x=v2x_partipdem, y=cases_log)) + 
+  geom_point() + geom_smooth(method=lm, color="maroon", se=FALSE)
+```
+
+**4. cases_log = $\beta$ + $\beta$ 1 v2x_polyarchy + $\beta$ 2 v2x_libdem + $\beta$ 3 v2x_partidem + $\epsilon$** 
+
+```{r, warning=FALSE, message=FALSE}
+OLS_m4=lm(cases_log~v2x_polyarchy + v2x_libdem +v2x_partipdem, data=Corona)
+summary(OLS_m4)
+```
+
+**Explanation**:
+The results show that there is a positive association between the number of cases of Corona and Democracy in the different types of Democracy indices (Polyarchy, Liberal Democracy and Participatory Democracy).
+<p>&nbsp;</p>
+**Simple Linear Regression Model**
+
+**cases_log = 1.9619 + 1.4940 v2x_polyarchy**
+
+This means that if the index of v2x_polyarchy increases by one unite in a certain country, the cases_log increases by 1.4940.
+
+**cases_log = 2.0592 + 1.6922 v2x_libdem**
+
+This means that if the index of v2x_libdem increases by one unite in a certain country, the cases_log increases by 2.0592.
+
+**cases_log = 1.9880 + 2.2494 vx2_partipdem**
+
+This means that if the index of v2x_partipdem increases by one unite in a certain country, the cases_log increases by 1.9880.
+<p>&nbsp;</p>
+**Multivariate Regression Model**
+
+**cases_log = 2.6622 + -5.5996 v2x_polyarchy + 4.1004 v2x_libdem + 4.0546 v2x_partipdem**
+
+This means that in this Multivariate Regression Model there is a possitive association between the number of cases of Corona and Liberal Democracy and Participatory Democracy variables. In addition, we found that for Polyarchy there is not significance and therefore it is possible to remove the variable from the model.  
+
+<p>&nbsp;</p>
+**5. There are two solutions to this problem in regression analysis. First, you can directly add population as one of the control variables:** 
+
+**cases_log = $\beta$ 0 + $\beta$ 1 v2x_polyarchy + $\beta$ 2 popdata2018 + $\epsilon$**
+
+```{r, warning=FALSE, message=FALSE}
+OLS_m5=lm(cases_log~v2x_polyarchy + popdata2018, data=Corona)
+summary(OLS_m5)
+```
+
+**Another solution is to normalize the number of cases by dividing the number Corona cases by population size, the cases per population, and use it as dependent variable.**
+
+**norm_case = $\beta$ 0 + $\beta$ 1 v2x_polyarchy + $\beta$ 2 popdata2018 + $\epsilon$**
+
+```{r, warning=FALSE, message=FALSE}
+Corona$norm_case=Corona$cases_log/Corona$popdata2018_log
+
+OLS_m6=lm(norm_case~v2x_polyarchy, data=Corona)
+summary(OLS_m6)
+```
+<p>&nbsp;</p>
+**Compare the results**:
+
+In order to better undestand the effect of democracy on the reported cases of Corona, it is necessary to add the population size. 
+
+It could be added as a control variable. 
+
+**cases_log = $\beta$ 0 + $\beta$ 1 v2x_polyarchy + $\beta$ 2 popdata2018 + $\epsilon$**
+
+or as a dependent variable by normalizing the number of cases by dividing the number Corona cases by population size.
+
+**norm_case = $\beta$ 0 + $\beta$ 1 v2x_polyarchy + $\beta$ 2 popdata2018 + $\epsilon$**
+
+The first solution provides the total number of the population size, while the second solution gives the total number of cases per capita.
+<p>&nbsp;</p>
+**Repeat your analysis using popdata2018 (normalized version of the equation)** 
+
+**norm_case = $\beta$ 0 + $\beta$ 1 v2x_polyarchy + $\epsilon$** 
+```{r, warning=FALSE, message=FALSE}
+OLS_m7=lm(norm_case~v2x_polyarchy, data=Corona)
+summary(OLS_m7)
+ggplot(Corona, aes(x=v2x_polyarchy, y=norm_case)) + 
+  geom_point() + geom_smooth(method=lm, color="maroon", se=FALSE)
+```
+
+**norm_case = $\beta$ 0 + $\beta$ 1 v2x_libdem + $\epsilon$** 
+
+```{r, warning=FALSE, message=FALSE}
+OLS_m8=lm(norm_case~v2x_libdem, data=Corona)
+summary(OLS_m8)
+ggplot(Corona, aes(x=v2x_libdem, y=norm_case)) + 
+  geom_point() + geom_smooth(method=lm, color="maroon", se=FALSE)
+```
+
+**norm_case = $\beta$ 0 + $\beta$ 1 v2x_partidem + $\epsilon$** 
+
+```{r, warning=FALSE, message=FALSE}
+OLS_m9=lm(norm_case~v2x_partipdem, data=Corona)
+summary(OLS_m9)
+ggplot(Corona, aes(x=v2x_partipdem, y=norm_case)) + 
+  geom_point() + geom_smooth(method=lm, color="maroon", se=FALSE)
+```
+
+**norm_case = $\beta$ + $\beta$ 1 v2x_polyarchy + $\beta$ 2 v2x_libdem + $\beta$ 3 v2x_partidem + $\epsilon$** 
+
+```{r, warning=FALSE, message=FALSE}
+OLS_m10=lm(norm_case~v2x_polyarchy + v2x_libdem +v2x_partipdem, data=Corona)
+summary(OLS_m10)
+```
+<p>&nbsp;</p>
+**Do the results change? How?**: 
+
+After repeating the analysis using popdata2018 in its normalized equation (the number of cases by dividing the number Corona cases by population size), we can state that that there is a similar but a bit stonger correlation between the variables and therefore we can confirm that in order to the population size should definitely be included when analyzing the effect of democracy on the reported Corona cases. 
+<p>&nbsp;</p>
+
+
+
+
+
+
+
+
